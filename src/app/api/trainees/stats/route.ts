@@ -25,11 +25,12 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   const trainees = traineesResult.data || [];
   const programs = programsResult.data || [];
-  const programNameById = new Map(programs.map((program) => [program.id, program.name]));
+  const programNameById: Map<string, string> = new Map(programs.map((program) => [(program.id as unknown) as string, (program.name as unknown) as string] as [string, string]));
 
   const byProgram: Record<string, number> = {};
   trainees.forEach((trainee) => {
-    const key = trainee.program_id ? (programNameById.get(trainee.program_id) || 'Unknown Program') : 'Unassigned';
+    const pid = (trainee.program_id as unknown) as string;
+    const key: string = pid ? (programNameById.get(pid) || 'Unknown Program') : 'Unassigned';
     byProgram[key] = (byProgram[key] || 0) + 1;
   });
 

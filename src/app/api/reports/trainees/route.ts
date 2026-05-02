@@ -48,17 +48,18 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   const traineeRows = trainees || [];
   const programRows = programs || [];
-  const programNameById = new Map(programRows.map((program) => [program.id, program.name]));
+  const programNameById: Map<string, string> = new Map(programRows.map((program) => [(program.id as unknown) as string, (program.name as unknown) as string] as [string, string]));
 
   const byProgram: Record<string, number> = {};
   const byStatus: Record<string, number> = {};
   const trendMap: Record<string, number> = {};
 
   for (const trainee of traineeRows) {
-    const programName = programNameById.get(trainee.program_id) || 'Unknown Program';
+    const programName: string = programNameById.get((trainee.program_id as unknown) as string) || 'Unknown Program';
     byProgram[programName] = (byProgram[programName] || 0) + 1;
 
-    byStatus[trainee.status] = (byStatus[trainee.status] || 0) + 1;
+    const statusStr = String(trainee.status);
+    byStatus[statusStr] = (byStatus[statusStr] || 0) + 1;
 
     const dateKey = (trainee.enrollment_date || trainee.created_at || '').split('T')[0] || 'unknown';
     trendMap[dateKey] = (trendMap[dateKey] || 0) + 1;

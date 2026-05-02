@@ -98,7 +98,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   if (programsResult.error) throw programsResult.error;
   if (datesResult.error) throw datesResult.error;
 
-  const programNameById = new Map((programsResult.data || []).map((program) => [program.id, program.name]));
+  const programNameById = new Map((programsResult.data || []).map((program) => [program.id as string, (program.name as unknown) as string]));
 
   const globalExcludedDates = new Set<string>();
   const excludedByProgram = new Map<string, Set<string>>();
@@ -203,7 +203,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       startTime: session.start_time,
       endTime: session.end_time,
       programId: session.program_id,
-      programName: programNameById.get(session.program_id) || 'Unknown Program',
+      programName: programNameById.get((session.program_id as unknown) as string) || 'Unknown Program',
       expected,
       recorded: sessionRows.length,
       present,
@@ -230,8 +230,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     const key = row.programId;
     if (!byProgramMap[key]) {
       byProgramMap[key] = {
-        programId: row.programId,
-        programName: row.programName,
+        programId: row.programId as string,
+        programName: row.programName as string,
         sessions: 0,
         expected: 0,
         recorded: 0,

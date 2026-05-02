@@ -68,7 +68,7 @@ class AuthRecoveryService {
       .from('refresh_tokens')
       .select('id, user_id, token_hash, expires_at, revoked_at')
       .eq('token_hash', tokenHash)
-      .maybeSingle<RefreshTokenRow>();
+      .maybeSingle() as { data: RefreshTokenRow | null; error: unknown };
 
     if (error) throw error;
 
@@ -129,7 +129,7 @@ class AuthRecoveryService {
       .from('users')
       .select('id, email')
       .eq('email', normalizedEmail)
-      .maybeSingle<{ id: string; email: string }>();
+      .maybeSingle() as { data: { id: string; email: string } | null; error: unknown };
 
     if (userError) throw userError;
     if (!user) return null;
@@ -144,9 +144,10 @@ class AuthRecoveryService {
         created_user_agent: meta?.userAgent,
       })
       .select('id')
-      .single<{ id: string }>();
+      .single() as { data: { id: string } | null; error: unknown };
 
     if (error) throw error;
+    if (!data) throw new Error('Failed to create password reset request');
 
     return { requestId: data.id, userId: user.id };
   }
@@ -176,7 +177,7 @@ class AuthRecoveryService {
       .from('password_reset_requests')
       .select('id, status')
       .eq('id', requestId)
-      .maybeSingle<{ id: string; status: string }>();
+      .maybeSingle() as { data: { id: string; status: string } | null; error: unknown };
 
     if (requestError) throw requestError;
     if (!request) throw new Error('Password reset request not found');
@@ -236,13 +237,16 @@ class AuthRecoveryService {
       .from('password_reset_requests')
       .select('id, user_id, status, token_expires_at, completed_at')
       .eq('reset_token_hash', tokenHash)
-      .maybeSingle<{
-        id: string;
-        user_id: string;
-        status: string;
-        token_expires_at: string | null;
-        completed_at: string | null;
-      }>();
+      .maybeSingle() as {
+        data: {
+          id: string;
+          user_id: string;
+          status: string;
+          token_expires_at: string | null;
+          completed_at: string | null;
+        } | null;
+        error: unknown;
+      };
 
     if (error) throw error;
     if (!request) throw new Error('Invalid reset token');

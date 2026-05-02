@@ -139,13 +139,15 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   };
 
   const traineeByStatus = traineeRows.reduce((acc, trainee) => {
-    acc[trainee.status] = (acc[trainee.status] || 0) + 1;
+    const statusKey = String(trainee.status);
+    acc[statusKey] = (acc[statusKey] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const programNameById = new Map(programRows.map((program) => [program.id, program.name]));
+  const programNameById: Map<string, string> = new Map(programRows.map((program) => [(program.id as unknown) as string, (program.name as unknown) as string] as [string, string]));
   const traineeByProgram = traineeRows.reduce((acc, trainee) => {
-    const key = programNameById.get(trainee.program_id) || 'Unknown Program';
+    const pid = (trainee.program_id as unknown) as string;
+    const key: string = programNameById.get(pid) || 'Unknown Program';
     acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
@@ -210,7 +212,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         return acc;
       }, {} as Record<string, number>)
     )
-      .map(([name, borrowCount]) => ({ name, borrowCount }))
+      .map(([name, borrowCount]) => ({ name, borrowCount: borrowCount as number }))
       .sort((a, b) => b.borrowCount - a.borrowCount)
       .slice(0, 10),
     borrowingTrend: Object.entries(lendingTrendMap)

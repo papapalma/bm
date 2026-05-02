@@ -1,10 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverActions: {
-      bodySizeLimit: '10mb', // Increased for file uploads (applies to Server Actions and Route Handlers)
-    },
-  },
   async headers() {
     return [
       // Security headers applied to every response (SEC-16)

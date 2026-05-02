@@ -82,16 +82,16 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   response.cookies.set('auth_token', token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: 'strict',
+    secure: true, // Required for sameSite: 'none'
+    sameSite: 'none',
     maxAge: AUTH_TOKEN_MAX_AGE_SECONDS,
     path: '/',
   });
 
   response.cookies.set('refresh_token', rotated.token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: 'strict',
+    secure: true, // Required for sameSite: 'none'
+    sameSite: 'none',
     maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
     path: '/',
   });

@@ -84,18 +84,19 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   });
 
   // Set HttpOnly cookie so the token is never exposed to JavaScript (SEC-4)
+  // Use sameSite: 'none' for cross-domain cookies (frontend and backend on different domains)
   response.cookies.set('auth_token', token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: 'strict',
+    secure: true, // Required for sameSite: 'none'
+    sameSite: 'none',
     maxAge: tokenMaxAge,
     path: '/',
   });
 
   response.cookies.set('refresh_token', refresh.token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: 'strict',
+    secure: true, // Required for sameSite: 'none'
+    sameSite: 'none',
     maxAge: refreshTokenMaxAge,
     path: '/',
   });

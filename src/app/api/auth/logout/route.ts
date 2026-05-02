@@ -44,8 +44,20 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   );
 
   const response = NextResponse.json({ success: true, data: null, message: 'Logged out successfully' });
-  // Clear the auth cookie (SEC-4/5)
-  response.cookies.set('auth_token', '', { httpOnly: true, maxAge: 0, path: '/' });
-  response.cookies.set('refresh_token', '', { httpOnly: true, maxAge: 0, path: '/' });
+  // Clear the auth cookie (SEC-4/5) - must match the sameSite setting used when setting the cookie
+  response.cookies.set('auth_token', '', { 
+    httpOnly: true, 
+    secure: true,
+    sameSite: 'none',
+    maxAge: 0, 
+    path: '/' 
+  });
+  response.cookies.set('refresh_token', '', { 
+    httpOnly: true, 
+    secure: true,
+    sameSite: 'none',
+    maxAge: 0, 
+    path: '/' 
+  });
   return response;
 });
